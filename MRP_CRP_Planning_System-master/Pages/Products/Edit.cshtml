@@ -1,0 +1,82 @@
+@page "{id:int}"
+@model MetallurgyAnalytics.Pages.Products.EditModel
+@{
+    ViewData["Title"] = "Редактировать продукт";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">✏️ Редактирование: @Model.Product?.Name</h4>
+                <a asp-page="Index" class="btn btn-sm btn-outline-light">← Назад</a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="Product.Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.Name" class="form-label">Наименование *</label>
+                            <input asp-for="Product.Name" class="form-control" />
+                            <span asp-validation-for="Product.Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.Sku" class="form-label">Артикул (SKU)</label>
+                            <input asp-for="Product.Sku" class="form-control" />
+                            <span asp-validation-for="Product.Sku" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.Type" class="form-label">Тип продукта</label>
+                            <select asp-for="Product.Type" class="form-select" asp-items="Html.GetEnumSelectList<MetallurgyAnalytics.Models.ProductType>()">
+                                <option value="">Выберите тип</option>
+                            </select>
+                            <span asp-validation-for="Product.Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.Uom" class="form-label">Единица измерения</label>
+                            <input asp-for="Product.Uom" class="form-control" />
+                            <span asp-validation-for="Product.Uom" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.LeadTimeDays" class="form-label">Срок выполнения (дни)</label>
+                            <input asp-for="Product.LeadTimeDays" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Product.LeadTimeDays" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.HeightMm" class="form-label">Высота (мм)</label>
+                            <input asp-for="Product.HeightMm" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="Product.HeightMm" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.WidthMm" class="form-label">Ширина (мм)</label>
+                            <input asp-for="Product.WidthMm" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="Product.WidthMm" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">💾 Обновить</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" asp-page-handler="Delete"
+                                class="btn btn-outline-danger ms-auto"
+                                onclick="return confirm('Удалить продукт?')">
+                            🗑️ Удалить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,90 @@
+@page
+@model MetallurgyAnalytics.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Регистрация";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">📝 Регистрация нового пользователя</h4>
+            </div>
+            <div class="card-body p-4">
+                
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0 small">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form method="post">
+                    <div asp-validation-summary="None" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.FullName" class="form-label">ФИО</label>
+                        <input asp-for="Input.FullName" class="form-control" placeholder="Иванов Иван Иванович" />
+                        <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Username" class="form-label">Логин *</label>
+                        <input asp-for="Input.Username" class="form-control" required autofocus />
+                        <span asp-validation-for="Input.Username" class="text-danger small"></span>
+                        <div class="form-text">Минимум 3 символа, только латиница.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Email" class="form-label">Email *</label>
+                        <input asp-for="Input.Email" type="email" class="form-control" required placeholder="name@example.com" />
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Password" class="form-label">Пароль *</label>
+                        <input asp-for="Input.Password" type="password" class="form-control" required minlength="6" />
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        <div class="form-text">Минимум 6 символов.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Input.ConfirmPassword" class="form-label">Подтвердите пароль *</label>
+                        <input asp-for="Input.ConfirmPassword" type="password" class="form-control" required />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2">🚀 Зарегистрироваться</button>
+                </form>
+
+                <hr class="my-4" />
+
+                <div class="text-center">
+                    <p class="mb-0">Уже есть аккаунт? <a asp-page="Login" class="fw-bold">Войти</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const pass = document.getElementById('Input_Password').value;
+            const confirm = document.getElementById('Input_ConfirmPassword').value;
+            if (pass !== confirm) {
+                e.preventDefault();
+                alert('❌ Пароли не совпадают!');
+            }
+        });
+    </script>
+}

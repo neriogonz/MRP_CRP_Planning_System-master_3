@@ -1,0 +1,60 @@
+@page
+@model MetallurgyAnalytics.Pages.WorkCenters.CreateModel
+@{
+    ViewData["Title"] = "Добавить продукт";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">➕ Новый продукт</h4>
+                <a asp-page="Index" class="btn btn-sm btn-outline-light">← Назад к списку</a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="WorkCenter.Name" class="form-label">Название центра *</label>
+                            <input asp-for="WorkCenter.Name" class="form-control" required />
+                            <span asp-validation-for="WorkCenter.Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="WorkCenter.Code" class="form-label">Код</label>
+                            <input asp-for="WorkCenter.Code" class="form-control" placeholder="WC-001" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="WorkCenter.CapacityPerHour" class="form-label">Производительность (ед/час)</label>
+                            <input asp-for="WorkCenter.CapacityPerHour" type="number" step="0.01" min="0" class="form-control" value="1" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="WorkCenter.CostPerHour" class="form-label">Стоимость часа (₽)</label>
+                            <input asp-for="WorkCenter.CostPerHour" type="number" step="0.01" min="0" class="form-control" value="0" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="WorkCenter.RollingSpeed" class="form-label">Скорость прокатки (м/мин)</label>
+                            <input asp-for="WorkCenter.RollingSpeed" type="number" step="0.1" min="0" class="form-control" />
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input asp-for="WorkCenter.IsActive" class="form-check-input" />
+                                <label asp-for="WorkCenter.IsActive" class="form-check-label">Центр активен</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-success px-4">💾 Сохранить</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,225 @@
+# =====================================================
+# 🎯 .gitignore для ASP.NET Core / .NET 8-10 проекта
+# Проект: MetallurgyAnalytics / MRP_CRP_Planning_System
+# =====================================================
+
+## 🔨 Сборка и компиляция
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bin/
+obj/
+*.userprefs
+*.pidb.meta
+*.pdb.meta
+*.pdb
+*.dll
+*.exe
+*.so
+*.dylib
+
+## 🗄️ Entity Framework Core
+# Миграции обычно коммитим, но локальные БД — нет
+*.mdf
+*.ldf
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.sdf
+*.sqldump
+Database.mdf
+Database_log.ldf
+
+## 🔐 Конфиденциальные данные и секреты
+# НИКОГДА не коммить файлы с паролями и ключами!
+appsettings.*.local.json
+appsettings.Production.json
+appsettings.Staging.json
+*.secrets.json
+.secrets/
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.pfx
+*.cer
+connectionstrings.json
+secrets.json
+
+## 🖥️ Пользовательские настройки и IDE
+### Visual Studio / Rider
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.pidb
+*.pidb.meta
+*.booproj
+*.csproj.user
+*.DotSettings.user
+.idea/
+*.rider/
+*.iml
+
+### VS Code
+.vscode/
+*.code-workspace
+.history/
+
+### Visual Studio Code (локальные настройки)
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.vscode/*.json
+
+## 🌐 Веб и фронтенд (если используется)
+### Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+### Frontend build outputs
+wwwroot/dist/
+*.min.js
+*.min.css
+*.map
+
+## 🐳 Docker и контейнеры
+### Docker
+docker-compose.override.yml.user
+.docker/
+*.dockerignore
+
+### Docker Compose локальные переопределения
+!docker-compose.yml
+!docker-compose.*.yml
+docker-compose.override.yml
+
+## 🧪 Тестирование и отладка
+### Тестовые данные
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.opencover.xml
+*.jacoco.xml
+*.lcov
+
+### Отладка
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+## 📦 NuGet и пакеты
+### Пакеты
+*.nupkg
+*.snupkg
+*.symbols.nupkg
+packages/
+!.nuget/packages/
+
+## 🐧 Linux / macOS специфичные
+### Системные файлы
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+### Временные файлы редакторов
+*.bak
+*.old
+*.orig
+*.rej
+
+## 🗂️ Документация и прочее
+### Документация (если не нужна в репо)
+*.pdf
+*.docx
+*.xlsx
+*.pptx
+docs/_build/
+site/
+
+### Локальные скрипты и конфиги
+*.sh.local
+*.ps1.local
+local.*.sh
+local.*.ps1
+
+## ✅ Что ОБЯЗАТЕЛЬНО коммитить (исключения)
+!appsettings.json
+!appsettings.Development.json
+!*.csproj
+!*.sln
+!*.cs
+!*.cshtml
+!*.razor
+!*.js
+!*.css
+!*.scss
+!*.ts
+!*.json
+!Migrations/
+!.gitkeep
+
+## 🎯 Специфичные для MetallurgyAnalytics
+### Локальные конфиги проекта
+config.local.json
+settings.local.json
+*.local.config
+
+### Временные файлы разработки
+*.sql.local
+*.dump.local
+temp/
+tmp/
+*.backup
+*.bak.sql
+
+## 🚀 GitHub Actions / CI/CD
+### Локальные файлы CI
+.github/workflows/*.local.yml
+.ci-local/
+
+## 📊 Swagger / OpenAPI (генерируемые)
+swagger.json
+swagger.yaml
+openapi.json
+openapi.yaml
+
+## 🧩 Blazor / WASM cache (если используется)
+wwwroot/_framework/
+wwwroot/_content/
+
+## 🔧 .NET MAUI (если вдруг)
+*.maui
+*.maui.user
+Platforms/Android/Resources/values/colors.xml
+Platforms/iOS/Entitlements.plist
+Platforms/iOS/Info.plist
+Platforms/MacCatalyst/Entitlements.plist
+Platforms/MacCatalyst/Info.plist
+
+# =====================================================
+# ✅ Конец .gitignore
+# Последнее обновление: Март 2026
+# =====================================================

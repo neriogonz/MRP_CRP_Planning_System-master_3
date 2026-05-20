@@ -1,0 +1,87 @@
+@page "{id:int}"
+@model MetallurgyAnalytics.Pages.Positions.EditModel
+@{
+    ViewData["Title"] = "Редактировать позицию";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">✏️ Редактирование: @Model.Position?.Name</h4>
+                <a asp-page="Index" class="btn btn-sm btn-outline-light">← Назад</a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="Position.Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Основные параметры</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label asp-for="Position.Name" class="form-label">Наименование позиции *</label>
+                            <input asp-for="Position.Name" class="form-control" />
+                            <span asp-validation-for="Position.Name" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label asp-for="Position.Preform" class="form-label">Тип заготовки (Preform)</label>
+                            <input asp-for="Position.Preform" class="form-control" list="preform-options-edit" />
+                            <datalist id="preform-options-edit">
+                                <option value="Billet"/>
+                                <option value="Slab"/>
+                                <option value="Bloom"/>
+                                <option value="Round"/>
+                            </datalist>
+                            <span asp-validation-for="Position.Preform" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Размерный ряд (мм)</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label asp-for="Position.Hmin" class="form-label">Мин. Высота (H)</label>
+                            <input asp-for="Position.Hmin" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="Position.Hmin" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Position.Hmax" class="form-label">Макс. Высота (H)</label>
+                            <input asp-for="Position.Hmax" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="Position.Hmax" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Position.Bmin" class="form-label">Мин. Ширина (B)</label>
+                            <input asp-for="Position.Bmin" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="Position.Bmin" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Position.Bmax" class="form-label">Макс. Ширина (B)</label>
+                            <input asp-for="Position.Bmax" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="Position.Bmax" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Position.SteelGradeGroup" class="form-label">Группа марок стали</label>
+                            <input asp-for="Position.SteelGradeGroup" type="number" step="1" class="form-control" />
+                            <span asp-validation-for="Position.SteelGradeGroup" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">💾 Обновить</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" asp-page-handler="Delete" 
+                                class="btn btn-outline-danger ms-auto" 
+                                onclick="return confirm('Удалить позицию @Model.Position.Name?')">🗑️ Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

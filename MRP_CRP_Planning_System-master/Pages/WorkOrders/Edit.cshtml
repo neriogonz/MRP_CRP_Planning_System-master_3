@@ -1,0 +1,95 @@
+@page
+@model MetallurgyAnalytics.Pages.WorkOrders.EditModel
+@{
+    ViewData["Title"] = "Редактировать рабочее задание";
+}
+
+<h2 class="mb-4">✏️ Редактирование рабочего задания #@Model.WorkOrder.Id</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <!-- Скрытое поле для ID, чтобы знать, какую запись обновлять -->
+            <input type="hidden" asp-for="WorkOrder.Id" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.ProductionOrderId" class="form-label">Производственный заказ</label>
+                    <!-- ИСПОЛЬЗУЕМ asp-items вместо ручного цикла -->
+                    <select asp-for="WorkOrder.ProductionOrderId" asp-items="Model.ProductionOrdersSelectList" class="form-select" required>
+                        <option value="">-- Выберите заказ --</option>
+                    </select>
+                    <span asp-validation-for="WorkOrder.ProductionOrderId" class="text-danger"></span>
+                    <small class="text-muted">Продукт и объем будут взяты из заказа.</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.WorkCenterId" class="form-label">Рабочий центр (Стан)</label>
+                    <select asp-for="WorkOrder.WorkCenterId" asp-items="Model.WorkCentersSelectList" class="form-select" required>
+                        <option value="">-- Выберите стан --</option>
+                    </select>
+                    <span asp-validation-for="WorkOrder.WorkCenterId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.PositionId" class="form-label">Позиция прокатки (Калибр)</label>
+                    <select asp-for="WorkOrder.PositionId" asp-items="Model.PositionsSelectList" class="form-select">
+                        <option value="">-- Не указано --</option>
+                    </select>
+                    <span asp-validation-for="WorkOrder.PositionId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.Name" class="form-label">Название партии</label>
+                    <input asp-for="WorkOrder.Name" class="form-control" placeholder="Например: Партия №1" />
+                    <span asp-validation-for="WorkOrder.Name" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="WorkOrder.DateStartPlanned" class="form-label">Плановое начало</label>
+                    <input asp-for="WorkOrder.DateStartPlanned" type="datetime-local" class="form-control" required />
+                    <span asp-validation-for="WorkOrder.DateStartPlanned" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="WorkOrder.DateEndPlanned" class="form-label">Плановое окончание</label>
+                    <input asp-for="WorkOrder.DateEndPlanned" type="datetime-local" class="form-control" required />
+                    <span asp-validation-for="WorkOrder.DateEndPlanned" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="WorkOrder.DurationExpectedHours" class="form-label">Ожидаемая длительность (ч)</label>
+                    <input asp-for="WorkOrder.DurationExpectedHours" type="number" step="0.1" class="form-control" />
+                    <span asp-validation-for="WorkOrder.DurationExpectedHours" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.Status" class="form-label">Статус</label>
+                    <select asp-for="WorkOrder.Status" class="form-select">
+                        <option value="0">В очереди (Pending)</option>
+                        <option value="1">В работе (Started)</option>
+                        <option value="2">Готово (Done)</option>
+                        <option value="3">Отменено (Cancelled)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="WorkOrder.Sequence" class="form-label">Очередь выполнения</label>
+                    <input asp-for="WorkOrder.Sequence" type="number" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">💾 Сохранить изменения</button>
+                <a asp-page="Index" class="btn btn-secondary">↩️ Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

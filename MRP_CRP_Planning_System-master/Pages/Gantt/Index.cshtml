@@ -1,0 +1,268 @@
+﻿@page
+@model MetallurgyAnalytics.Pages.Gantt.IndexModel
+@{
+    ViewData["Title"] = "Диаграмма загрузки станов (Гант)";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📊 @Model.Title</h2>
+        <button id="btnRunPlanning" class="btn btn-success">⚡ Запустить планирование</button>
+    </div>
+
+    <div id="planningMessage" class="alert alert-info" style="display:none;"></div>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Дата начала:</label>
+            <input type="date" id="dateStart" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Дата окончания:</label>
+            <input type="date" id="dateEnd" class="form-control" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button id="btnLoad" class="btn btn-primary w-100">Обновить график</button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div id="gantt-chart" style="width:100%; height:550px;"></div>
+            
+            <div id="gantt-legend" class="mt-3 d-flex flex-wrap gap-3 justify-content-center border-top pt-3">
+                <span class="text-muted small">Загрузка данных...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    <script>
+        const colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', 
+            '#FF9F40', '#8AC926', '#1982C4', '#6A4C93', '#F15BB5',
+            '#00B4D8', '#90BE6D', '#F9C74F', '#F94144', '#43AA8B',
+            '#577590', '#4D96FF', '#FF8585', '#C7F464', '#FFD93D'
+        ];
+
+        const positionColorMap = {};
+        const positionNameMap = {};
+        let colorIndex = 0;
+
+        function getPositionColor(positionId, positionName) {
+            if (positionId === null || positionId === undefined) {
+                return '#cccccc';
+            }
+
+            if (!positionColorMap[positionId]) {
+                const color = colorPalette[colorIndex % colorPalette.length];
+                positionColorMap[positionId] = color;
+                positionNameMap[positionId] = positionName || `Позиция #${positionId}`;
+                colorIndex++;
+            }
+            return positionColorMap[positionId];
+        }
+
+        function renderLegend() {
+            const legendContainer = document.getElementById('gantt-legend');
+            legendContainer.innerHTML = '';
+
+            if (Object.keys(positionColorMap).length === 0) {
+                legendContainer.innerHTML = '<span class="text-muted small">Нет данных для легенды</span>';
+                return;
+            }
+
+            for (const [id, color] of Object.entries(positionColorMap)) {
+                const name = positionNameMap[id];
+                
+                const badge = document.createElement('div');
+                badge.className = 'd-flex align-items-center me-3 mb-2';
+                badge.innerHTML = `
+                    <span style="width: 16px; height: 16px; background-color: ${color}; display: inline-block; border-radius: 3px; margin-right: 6px; border: 1px solid #ddd;"></span>
+                    <span class="small text-dark">${name}</span>
+                `;
+                legendContainer.appendChild(badge);
+            }
+        }
+
+        document.getElementById('btnRunPlanning').addEventListener('click', async () => {
+            const btn = document.getElementById('btnRunPlanning');
+            const msgBox = document.getElementById('planningMessage');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Планирование...';
+            msgBox.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/gantt/run-planning', { method: 'POST' });
+                const result = await response.json();
+
+                msgBox.style.display = 'block';
+                if (response.ok) {
+                    msgBox.className = 'alert alert-success';
+                    msgBox.innerText = result.message;
+                    await loadGanttData();
+                } else {
+                    msgBox.className = 'alert alert-danger';
+                    msgBox.innerText = 'Ошибка: ' + result.message;
+                }
+            } catch (error) {
+                console.error(error);
+                msgBox.style.display = 'block';
+                msgBox.className = 'alert alert-danger';
+                msgBox.innerText = 'Ошибка соединения с сервером.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '⚡ Запустить планирование';
+            }
+        });
+
+        async function loadGanttData() {
+            const start = document.getElementById('dateStart').value;
+            const end = document.getElementById('dateEnd').value;
+            
+            if (!start || !end) {
+                alert('Пожалуйста, выберите даты.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/gantt/tasks?start=${start}&end=${end}`);
+                if (!response.ok) throw new Error('Ошибка сети');
+                
+                const tasks = await response.json();
+                renderChart(tasks);
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                alert('Не удалось загрузить данные графика.');
+            }
+        }
+
+        function renderChart(tasks) {
+            const container = document.getElementById('gantt-chart');
+            
+
+            if (tasks.length === 0) {
+                Plotly.newPlot(container, [], {
+                    title: 'Нет данных для отображения в выбранном периоде',
+                    xaxis: { visible: false },
+                    yaxis: { visible: false }
+                }, { responsive: true });
+                document.getElementById('gantt-legend').innerHTML = '<span class="text-muted small">Нет активных позиций</span>';
+                return;
+            }
+
+            const yValues = [];
+            const xDurations = [];
+            const baseDates = [];
+            const hoverTexts = [];
+            const barColors = [];
+
+            tasks.forEach(task => {
+                const start = new Date(task.start_date);
+                const end = new Date(task.end_date);
+                const durationMs = end - start;
+
+                yValues.push(task.resource_name || `Стан #${task.work_center_id}`);
+                xDurations.push(durationMs);
+                baseDates.push(start);
+                
+                let posName = 'Без калибра';
+                if (task.text.includes('[') && task.text.includes(']')) {
+                    posName = task.text.split('[')[1].split(']')[0];
+                } else if (task.resource_name) {
+                    posName = `ID: ${task.position_id || '?'}`;
+                }
+
+                const color = getPositionColor(task.position_id, posName);
+                barColors.push(color);
+
+                const statusRu = {
+                    'pending': 'В очереди',
+                    'started': 'В работе',
+                    'done': 'Готово',
+                    'cancelled': 'Отменено'
+                }[task.status] || task.status;
+
+                const prodName = task.text.split('[')[0].trim();
+
+                hoverTexts.push(
+                    `<b>${prodName}</b><br>` +
+                    `<b>Калибр:</b> ${posName}<br>` +
+                    `<b>Стан:</b> ${task.resource_name}<br>` +
+                    `<b>Старт:</b> ${start.toLocaleString('ru-RU')}<br>` +
+                    `<b>Финиш:</b> ${end.toLocaleString('ru-RU')}<br>` +
+                    `<b>Длительность:</b> ${(durationMs / 3600000).toFixed(1)} ч.<br>` +
+                    `<b>Статус:</b> ${statusRu}`
+                );
+            });
+
+            const trace = {
+                x: xDurations,
+                y: yValues,
+                base: baseDates,
+                type: 'bar',
+                orientation: 'h',
+                marker: {
+                    color: barColors,
+                    line: { color: 'white', width: 1.5 }
+                },
+                hoverinfo: 'text',
+                hovertext: hoverTexts,
+                name: 'Партии'
+            };
+
+            const layout = {
+                title: 'Оперативный план производства (Загрузка станов)',
+                xaxis: {
+                    title: 'Время',
+                    type: 'date',
+                    tickformat: '%H:%M<br>%d.%m',
+                    showgrid: true,
+                    gridcolor: '#eee'
+                },
+                yaxis: {
+                    title: 'Рабочие центры (Станы)',
+                    automargin: true,
+                    categoryorder: 'array',
+                    categoryarray: [...new Set(yValues)].reverse() 
+                },
+                margin: { l: 150, r: 50, t: 60, b: 20 },
+                height: 550,
+                showlegend: false,
+                hovermode: 'closest'
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            };
+
+            Plotly.newPlot('gantt-chart', [trace], layout, config);
+            
+            renderLegend();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const nextWeek = new Date();
+            nextWeek.setDate(today.getDate() + 14);
+            
+            document.getElementById('dateStart').valueAsDate = today;
+            document.getElementById('dateEnd').valueAsDate = nextWeek;
+
+            loadGanttData();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('autoPlan') === 'true') {
+                document.getElementById('btnRunPlanning').click();
+            }
+        });
+
+        document.getElementById('btnLoad').addEventListener('click', loadGanttData);
+    </script>
+}

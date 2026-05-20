@@ -1,0 +1,14 @@
+@model string
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">⚠️ Подтверждение удаления</h5>
+    </div>
+    <div class="card-body">
+        <p class="mb-3">Вы действительно хотите удалить запись <strong>@Model</strong>?</p>
+        <p class="text-muted small">Это действие нельзя отменить. Убедитесь, что запись не используется в других местах.</p>
+        <form method="post">
+            <button type="submit" class="btn btn-danger">🗑️ Да, удалить</button>
+            <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+@page "{id:int}"
+@model MetallurgyAnalytics.Pages.Formulas.EditModel
+@{
+    ViewData["Title"] = "Редактировать позицию";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">✏️ Редактирование: Формула №@Model.Formula.Id</h4>
+                <a asp-page="Index" class="btn btn-sm btn-outline-light">← Назад</a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="Formula.Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <h5 class="text-primary border-bottom pb-2 mb-3">Основные параметры</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label asp-for="Formula.EndProductId" class="form-label">Продукт *</label>
+                            <select asp-for="Formula.EndProductId" class="form-select" asp-items="Model.EndProductOptions" required onchange="this.form.submit()">
+                                <option value="">-- Выберите конечный продукт --</option>
+                            </select>
+                            <span asp-validation-for="Formula.EndProductId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-8">
+                            <label asp-for="Formula.IngredientId" class="form-label">Продукт *</label>
+                            <select asp-for="Formula.IngredientId" class="form-select" asp-items="Model.IngredientOptions" required onchange="this.form.submit()">
+                                <option value="">-- Выберите ингредиент --</option>
+                            </select>
+                            <span asp-validation-for="Formula.IngredientId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Formula.ConsumptionCoeff" class="form-label">Расходный коэффициент</label>
+                            <input asp-for="Formula.ConsumptionCoeff" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="Formula.ConsumptionCoeff" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-8">
+                            <label asp-for="Formula.WorkCenterId" class="form-label">Продукт *</label>
+                            <select asp-for="Formula.WorkCenterId" class="form-select" asp-items="Model.WorkCenterOptions" required onchange="this.form.submit()">
+                                <option value="">-- Выберите рабочий центр (техкарту) --</option>
+                            </select>
+                            <span asp-validation-for="Formula.WorkCenterId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">💾 Обновить</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" asp-page-handler="Delete" 
+                                class="btn btn-outline-danger ms-auto" 
+                                onclick="return confirm('Удалить формулу №@Model.Formula.Id?')">🗑️ Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

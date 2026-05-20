@@ -1,0 +1,146 @@
+@page
+@using MetallurgyAnalytics.Models
+@model MetallurgyAnalytics.Pages.WorkOrders.IndexModel
+@{
+    ViewData["Title"] = "Рабочие задания";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>⚙️ Рабочие задания (Партии)</h2>
+    <a asp-page="Create" class="btn btn-success">➕ Добавить вручную</a>
+</div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="search" name="search" class="form-control" placeholder="Поиск по названию или заказу..." value="@Model.Search" />
+    </div>
+    <div class="col-md-3">
+        <select name="statusFilter" class="form-select">
+            <option value="">Все статусы</option>
+            <option value="Pending" selected="@(Model.StatusFilter == "Pending")">В очереди</option>
+            <option value="Started" selected="@(Model.StatusFilter == "Started")">В работе</option>
+            <option value="Done" selected="@(Model.StatusFilter == "Done")">Готово</option>
+            <option value="Cancelled" selected="@(Model.StatusFilter == "Cancelled")">Отменено</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="workCenterFilter" class="form-select">
+            <option value="">Все станы</option>
+            @foreach (var wc in Model.WorkCenters)
+            {
+                <option value="@wc.Id" selected="@(Model.WorkCenterFilter == wc.Id)">
+                    @wc.Name
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Фильтр</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Название партии</th>
+                <th>Продукт</th>
+                <th>Стан</th>
+                <th>Калибр</th>
+                <th>План (Начало - Конец)</th>
+                <th>Длительность (ч)</th>
+                <th>Статус</th>
+                <th>Прогресс</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.WorkOrders.Any())
+            {
+                @foreach (var item in Model.WorkOrders)
+                {
+                    var badgeClass = item.Status switch
+                    {
+                        WorkOrderStatus.Done => "bg-success",
+                        WorkOrderStatus.Started => "bg-warning text-dark",
+                        WorkOrderStatus.Cancelled => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+
+                    <tr>
+                        <td>@item.Id</td>
+                        <td><strong>@item.Name</strong></td>
+                        <td>
+                            @if (item.ProductionOrder?.Product != null)
+                            {
+                                <span>@item.ProductionOrder.Product.Sku</span><br/>
+                                <small class="text-muted">@item.ProductionOrder.Product.Name</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Нет данных</span>
+                            }
+                        </td>
+                        <td>@item.WorkCenter?.Name ?? "Не указан"</td>
+                        <td><code>@item.Position?.Name ?? "-"</code></td>
+                        <td>
+                            <small class="d-block text-muted">Старт:</small> @item.DateStartPlanned.ToString("dd.MM HH:mm")<br/>
+                            <small class="d-block text-muted">Финиш:</small> @item.DateEndPlanned.ToString("dd.MM HH:mm")
+                        </td>
+                        <td>@item.DurationExpectedHours.ToString("F1")</td>
+                        <td><span class="badge @badgeClass">@item.Status</span></td>
+                        @* <td>
+                            <div class="progress" style="height: 6px; width: 100px;">
+                                <div class="progress-bar" role="progressbar" style="width: @item.Progress%"></div>
+                            </div>
+                            <small>@item.Progress%</small>
+                        </td> *@
+                        <td class="text-end">
+                            <a asp-page="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Просмотр">👁️</a>
+                            <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Редактировать">✏️</a>
+                            <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Удалить">🗑️</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-4">
+                        @(Model.Search != null || Model.StatusFilter != null ? "Ничего не найдено по фильтру" : "Список рабочих заданий пуст. Запустите планирование или добавьте вручную.")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (Model.PageId > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-pageid="@(Model.PageId - 1)" asp-route-search="@Model.Search"
+                       asp-route-statusFilter="@Model.StatusFilter" asp-route-workCenterFilter="@Model.WorkCenterFilter">← Назад</a>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageId ? "active" : "")">
+                    <a class="page-link" asp-route-pageid="@i" asp-route-search="@Model.Search"
+                       asp-route-statusFilter="@Model.StatusFilter" asp-route-workCenterFilter="@Model.WorkCenterFilter">@i</a>
+                </li>
+            }
+            @if (Model.PageId < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-pageid="@(Model.PageId + 1)" asp-route-search="@Model.Search"
+                       asp-route-statusFilter="@Model.StatusFilter" asp-route-workCenterFilter="@Model.WorkCenterFilter">Вперёд →</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

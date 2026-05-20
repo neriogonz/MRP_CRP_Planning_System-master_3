@@ -1,0 +1,176 @@
+﻿@page
+@model MetallurgyAnalytics.Pages.IndexModel
+@{
+    ViewData["Title"] = "Панель управления";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="text-center mt-5">
+        <h2>Добро пожаловать в Metallurgy Analytics</h2>
+        <p class="lead">Система планирования ресурсов металлургического комбината</p>
+        <a asp-page="Account/Login" class="btn btn-primary btn-lg mt-3">🔐 Войти</a>
+        <a asp-page="Account/Register" class="btn btn-outline-secondary btn-lg mt-3">📝 Регистрация</a>
+    </div>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col">
+            <h2>👋 Привет, @User.Identity.Name!</h2>
+            <small class="text-muted">Роль: @(User.FindFirst("Role")?.Value ?? "user")</small>
+        </div>
+        <div class="col text-end">
+            <form asp-page="Account/Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger">🚪 Выйти</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">📦 Готовая продукция</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Управление номенклатурой продукции, артикулами и единицами измерения.</p>
+                    <a asp-page="Products/Index" class="btn btn-success">Просмотр</a>
+                    <a asp-page="Products/Create" class="btn btn-outline-success">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">⚙️ Рабочие центры</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Настройка производственных мощностей, стоимости и скорости прокатки.</p>
+                    <a asp-page="WorkCenters/Index" class="btn btn-info">Просмотр</a>
+                    <a asp-page="WorkCenters/Create" class="btn btn-outline-info">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-teal text-white" style="background-color: #20c997;">
+                    <h5 class="mb-0">🏭 Позиции прокатки</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Настройка калибров, размерных рядов и типов заготовок для станов.</p>
+                    <a asp-page="Positions/Index" class="btn btn-teal" style="background-color: #20c997; border-color: #20c997; color: white;">Просмотр</a>
+                    <a asp-page="Positions/Create" class="btn btn-outline-teal" style="border-color: #20c997; color: #20c997;">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-teal text-white" style="background-color: #20c997;">
+                    <h5 class="mb-0">📦 Формулы</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Формулы для преобразованя ингредиентов в готовую продукцию.</p>
+                    <a asp-page="Formulas/Index" class="btn btn-teal" style="background-color: #20c997; border-color: #20c997; color: white;">Просмотр</a>
+                    <a asp-page="Formulas/Create" class="btn btn-outline-teal" style="border-color: #20c997; color: #20c997;">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        @* <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">📋 Спецификации (BOM)</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Управление составами изделий и нормами расхода материалов.</p>
+                    <a asp-page="Bom/Index" class="btn btn-warning">Просмотр</a>
+                    <a asp-page="Bom/Create" class="btn btn-outline-warning">➕ Добавить</a>
+                </div>
+            </div>
+        </div> *@
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🏭 Производственные заказы</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Планирование и отслеживание производственных заданий с привязкой к исполнителям.</p>
+                    <a asp-page="ProductionOrders/Index" class="btn btn-primary">Просмотр</a>
+                    <a asp-page="ProductionOrders/Create" class="btn btn-outline-primary">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">📊 Рабочие задания</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Детализация операций по рабочим центрам. Отображение на диаграмме Ганта.</p>
+                    <a asp-page="WorkOrders/Index" class="btn btn-secondary">Просмотр</a>
+                    <a asp-page="WorkOrders/Create" class="btn btn-outline-secondary">➕ Добавить</a>
+                </div>
+            </div>
+        </div>
+
+        @* <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">🚚 Перемещения</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Учёт движения материалов между складами и производством.</p>
+                    <a asp-page="StockMoves/Index" class="btn btn-dark">Просмотр</a>
+                    <a asp-page="StockMoves/Create" class="btn btn-outline-dark">➕ Добавить</a>
+                </div>
+            </div>
+        </div> *@
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card h-100 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🚀 Планирование (MRP/CRP)</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Автоматический расчет партий (Work Orders) на основе производственных заказов и загрузка диаграммы Ганта.</p>
+                <a asp-page="Gantt/Index" asp-route-autoPlan="true" class="btn btn-primary w-100">Запустить и открыть</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">📈 Быстрая статистика</div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3 class="text-primary">@Model.ProductsCount</h3>
+                            <small>Продуктов</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-info">@Model.WorkCentersCount</h3>
+                            <small>Рабочих центров</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-warning">@Model.OrdersCount</h3>
+                            <small>Активных заказов</small>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-success">@Model.PendingWorkOrdersCount</h3>
+                            <small>Заданий в очереди</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

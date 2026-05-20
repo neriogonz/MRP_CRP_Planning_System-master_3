@@ -1,0 +1,124 @@
+@page
+@model MetallurgyAnalytics.Pages.Formulas.IndexModel
+@{
+    ViewData["Title"] = "Формулы";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📦 Формулы</h2>
+    <a asp-page="Create" class="btn btn-success">➕ Добавить формулу</a>
+</div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="search" name="search" class="form-control"
+               placeholder="Поиск по номеру..." value="@Model.Search" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Найти</button>
+    </div>
+    <div class="col-md-2">
+        <a asp-page="Index" class="btn btn-outline-secondary w-100">🔄 Сбросить</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.Formulas.FirstOrDefault().Id)</th>
+                <th>@Html.DisplayNameFor(m => m.Formulas.FirstOrDefault().EndProduct)</th>
+                <th>@Html.DisplayNameFor(m => m.Formulas.FirstOrDefault().Ingredient)</th>
+                <th>@Html.DisplayNameFor(m => m.Formulas.FirstOrDefault().ConsumptionCoeff)</th>
+                <th>@Html.DisplayNameFor(m => m.Formulas.FirstOrDefault().WorkCenter)</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Formulas.Any())
+            {
+                @foreach (var item in Model.Formulas)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td><code>@item.EndProduct.GetVisibleName()</code></td>
+                        <td><code>@item.Ingredient.GetVisibleName()</code></td>
+                        <td><code>@item.ConsumptionCoeff</code></td>
+                        <td><code>@item.WorkCenter.Name</code></td>
+                        <td class="text-end">
+                            <a asp-page="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Просмотр">👁️</a>
+                            <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Редактировать">✏️</a>
+                            <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Удалить">🗑️</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">
+                        @(Model.Search != null ? "Ничего не найдено" : "Список формул пуст. Добавьте первую формулу!")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card mt-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            📥 Импорт данных из CSV
+        </div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(Model.ImportMessage))
+            {
+                <div class="alert @(Model.IsImportSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                    @Model.ImportMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="csvFile" class="form-label">Выберите файл CSV (кодировка UTF-8, разделитель ;)</label>
+                    <input type="file" class="form-control" id="csvFile" name="file" accept=".csv" required />
+                    <div class="form-text">Ожидаемые колонки: N;Готовый продукт;Ингредиент;Расходный коэффициент;Техкарта</div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" asp-page-handler="Import" class="btn btn-success w-100">Загрузить</button>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="btn btn-outline-secondary btn-sm">📥 Скачать шаблон CSV</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (Model.PageId > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="./Index" asp-route-pageid="@(Model.PageId - 1)"
+                       asp-route-search="@Model.Search" asp-route-type="@Model.PreformFilter">← Назад</a>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageId ? "active" : "")">
+                    <a class="page-link" asp-page="./Index" asp-route-pageid="@i"
+                       asp-route-search="@Model.Search" asp-route-type="@Model.PreformFilter">@i</a>
+                </li>
+            }
+            @if (Model.PageId < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="./Index" asp-route-pageid="@(Model.PageId + 1)"
+                       asp-route-search="@Model.Search" asp-route-type="@Model.PreformFilter">Вперёд →</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

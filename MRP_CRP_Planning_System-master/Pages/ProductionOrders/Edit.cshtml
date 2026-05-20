@@ -1,0 +1,93 @@
+@page "{id:int}"
+@model MetallurgyAnalytics.Pages.ProductionOrders.EditModel
+@{
+    ViewData["Title"] = "Редактировать продукт";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">✏️ Редактирование заказа под номером @Model.Order.ProductId</h4>
+                <a asp-page="Index" class="btn btn-sm btn-outline-light">← Назад</a>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="ProductionOrderId" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label asp-for="Order.ProductId" class="form-label">Продукт *</label>
+                            <select asp-for="Order.ProductId" class="form-select" asp-items="Model.ProductOptions" required onchange="this.form.submit()">
+                                <option value="">-- Выберите продукт --</option>
+                            </select>
+                            <span asp-validation-for="Order.ProductId" class="text-danger"></span>
+                            <small class="text-muted">При выборе продукта даты пересчитаются автоматически.</small>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Order.Quantity" class="form-label">Количество *</label>
+                            <input asp-for="Order.Quantity" type="number" step="0.01" min="0.01" class="form-control" required />
+                            <span asp-validation-for="Order.Quantity" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Order.Priority" class="form-label">Приоритет</label>
+                            <select asp-for="Order.Priority" class="form-select">
+                                <option value="0">⚪ Обычный</option>
+                                <option value="1">🔵 Повышенный</option>
+                                <option value="2">🟡 Высокий</option>
+                                <option value="3">🔴 Критический</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Order.State" class="form-label">Статус</label>
+                            <select asp-for="Order.State" asp-items="Html.GetEnumSelectList<MetallurgyAnalytics.Models.OrderState>()" class="form-select">
+                            </select>
+                        </div>
+
+                        @if (User.IsInRole("admin") || User.IsInRole("planner"))
+                        {
+                            <div class="col-md-4">
+                                <label asp-for="Order.AssignedToUserId" class="form-label">Ответственный</label>
+                                <select asp-for="Order.AssignedToUserId" class="form-select" asp-items="Model.UserOptions">
+                                    <option value="">-- Не назначен --</option>
+                                </select>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="Order.AssignedToUserId" />
+                        }
+
+                        <div class="col-md-6">
+                            <label class="form-label">Плановое начало</label>
+                            <input type="datetime-local" class="form-control bg-light"
+                                   value="@Model.Order.DateStartPlanned.ToString("yyyy-MM-ddTHH:mm")" readonly />
+                            <small class="text-muted">Текущее время</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Плановое окончание</label>
+                            <input type="datetime-local" class="form-control bg-light"
+                                   value="@Model.Order.DateFinishPlanned.ToString("yyyy-MM-ddTHH:mm")" readonly />
+                            <small class="text-muted">Расчетное на основе срока производства</small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">💾 Обновить</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" asp-page-handler="Delete"
+                                class="btn btn-outline-danger ms-auto"
+                                onclick="return confirm('Удалить продукт?')">
+                            🗑️ Удалить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
