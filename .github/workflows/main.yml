@@ -9,19 +9,18 @@ jobs:
     - name: 1. Descargar el codigo
       uses: actions/checkout@v4
       
-    - name: 2. Escanear los archivos (Debug)
+    - name: 2. Construir la imagen
       run: |
-        pwd
-        ls -la
+        cd MRP_CRP_Planning_System-master
+        docker build -f Dockerfile -t crp_mrp_planning_image .
         
-    - name: 3. Construir la imagen
-      run: docker build -f Dockerfile -t crp_mrp_planning_image .
-      
-    - name: 4. Guardar la imagen
-      run: docker save crp_mrp_planning_image > docker-image.tar
-      
-    - name: 5. Subir el artefacto
+    - name: 3. Guardar la imagen
+      run: |
+        cd MRP_CRP_Planning_System-master
+        docker save crp_mrp_planning_image > docker-image.tar
+        
+    - name: 4. Subir el artefacto
       uses: actions/upload-artifact@v5.0.0
       with:
         name: docker-image.tar
-        path: docker-image.tar
+        path: MRP_CRP_Planning_System-master/docker-image.tar
