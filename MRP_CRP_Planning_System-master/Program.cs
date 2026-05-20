@@ -30,10 +30,16 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+ 
+    await WaitForDatabase(dbContext);
+    
+    await dbContext.Database.EnsureCreatedAsync();
+    Console.WriteLine("Database tables created!");
+
+
     var services = scope.ServiceProvider;
     try
     {
-        
         Console.WriteLine("Checking for pending migrations...");
         
         if (dbContext.Database.GetPendingMigrations().Any())
@@ -53,9 +59,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred while migrating the database.");
         throw; 
     }
-    dbContext.Database.EnsureCreated();
 }
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles(); 
@@ -67,3 +71,21 @@ app.MapRazorPages();
 app.MapControllers();
 
 app.Run();
+
+
+static async Task WaitForDatabase(AppDbContext context)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (await context.Database.CanConnectAsync())
+        {
+            Console.WriteLine("Database connected!");
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"Waiting for database... ({i + 1}/10)");
+            await Task.Delay(3000);
+        }
+    }
+}
