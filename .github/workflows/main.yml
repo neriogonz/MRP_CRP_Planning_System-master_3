@@ -1,20 +1,21 @@
 name: Docker Image CI
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "main" ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Listar archivos para comprobar
-      run: ls -la
+    
     - name: Build the Docker image
-      run: docker compose -f docker-compose.yml build
+      run: docker build -t crp_mrp_planning_image .
+      
     - name: Save the Docker image
       run: docker save crp_mrp_planning_image > docker-image.tar
+      
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v5.0.0
       with:
