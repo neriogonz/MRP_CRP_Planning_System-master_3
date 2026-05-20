@@ -2,21 +2,25 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master", "main" ]
-  pull_request:
-    branches: [ "master", "main" ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Build the Docker image
-      run: docker build -t crp_mrp_planning_image .
+    - name: 1. Descargar el codigo
+      uses: actions/checkout@v4
       
-    - name: Save the Docker image
+    - name: 2. Escanear los archivos (Debug)
+      run: |
+        pwd
+        ls -la
+        
+    - name: 3. Construir la imagen
+      run: docker build -f Dockerfile -t crp_mrp_planning_image .
+      
+    - name: 4. Guardar la imagen
       run: docker save crp_mrp_planning_image > docker-image.tar
       
-    - name: Upload a Build Artifact
+    - name: 5. Subir el artefacto
       uses: actions/upload-artifact@v5.0.0
       with:
         name: docker-image.tar
