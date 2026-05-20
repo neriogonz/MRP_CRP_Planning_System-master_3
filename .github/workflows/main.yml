@@ -9,8 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Listar archivos para comprobar
+      run: ls -la
     - name: Build the Docker image
-      run: docker compose build
+      run: docker compose -f docker-compose.yml build
     - name: Save the Docker image
       run: docker save crp_mrp_planning_image > docker-image.tar
     - name: Upload a Build Artifact
