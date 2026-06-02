@@ -9,7 +9,7 @@ pipeline {
 		}
 		stage('Build Docker Image') {
 			steps {
-				dir(MRP_CRP_Planning_System-master_3/MRP_CRP_Planning_System-master) {
+				dir('MRP_CRP_Planning_System-master_3/MRP_CRP_Planning_System-master') {
 					sh 'ls -l'
 					sh 'docker compose build'
 				}
@@ -17,7 +17,7 @@ pipeline {
 		}
 		stage('Start Docker Container') {
 			steps {
-				dir(MRP_CRP_Planning_System-master_3/MRP_CRP_Planning_System-master) {
+				dir('MRP_CRP_Planning_System-master_3/MRP_CRP_Planning_System-master') {
 					sh 'docker compose up -d'
 			}
 		}
