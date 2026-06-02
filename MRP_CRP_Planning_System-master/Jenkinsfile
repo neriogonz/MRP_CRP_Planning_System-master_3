@@ -7,6 +7,19 @@ pipeline {
 				echo 'Hello jenkins from Nerio!'
 			}
 		}
-		
+		stage('Build Docker Image') {
+			steps {
+				dir('MRP_CRP_Planning_System-master') {
+					sh 'ls -l'
+					sh 'docker compose build'
+				}
+			}
+		}
+		stage('Start Docker Container') {
+			steps {
+				dir('MRP_CRP_Planning_System-master') {
+					sh 'docker compose up -d'
+			}
+		}
 	}
 }
