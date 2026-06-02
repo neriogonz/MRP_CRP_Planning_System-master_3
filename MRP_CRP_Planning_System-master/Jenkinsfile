@@ -19,6 +19,7 @@ pipeline {
 			steps {
 				dir('MRP_CRP_Planning_System-master') {
 					sh 'docker compose up -d'
+				}
 			}
 		}
 	}
